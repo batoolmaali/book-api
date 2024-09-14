@@ -18,9 +18,9 @@ namespace BookAPI.Data.Models
         [StringLength(500)]
         public string Description { get; set; }
 
-     
+      
         [Url]
-        public string? ThumbnailUrl { get; set; }
+        public byte[]? ThumbnailUrl { get; set; }
 
         [Required]
         [Url]

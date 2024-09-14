@@ -46,7 +46,7 @@ namespace BookAPI.Controllers
             }
         }
 
-        [HttpGet("/GetCategoryWithBooks/{id}")]
+        [HttpGet("GetCategoryWithBooks/{id}")]
         public IActionResult GetCategoryWithBooks(int id)
         {
             var categoryBooks = _DbContext.BookKids

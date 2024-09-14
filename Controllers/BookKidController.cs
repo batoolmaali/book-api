@@ -49,7 +49,7 @@ namespace BookAPI.Controllers
             await _DbContext.SaveChangesAsync();
             return Ok(item);
         }
-        [HttpGet("/GetById/{id}")]
+        [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
           

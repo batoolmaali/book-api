@@ -1,11 +1,14 @@
 ﻿using BookAPI.Data;
 using BookAPI.Data.Models;
+using BookAPI.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static Azure.Core.HttpHeader;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 
@@ -23,7 +26,7 @@ namespace BookAPI.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        List<KidsVideos> kidsVideosList = new List<KidsVideos>
+     /*   List<KidsVideos> kidsVideosList = new List<KidsVideos>
         {
             new KidsVideos
             {
@@ -98,15 +101,134 @@ namespace BookAPI.Controllers
                 ThumbnailUrl = "https://th.bing.com/th/id/OIP.SqllrqroAQX61VZkGtFxJgHaFN?pid=ImgDet&w=161&h=113&c=7",
                 VideoUrl = "https://cdn.pixabay.com/video/2019/10/10/27730-365891000_large.mp4"
             }
-        };
+        };*/
 
+        /*  [HttpGet]
+          public IActionResult GetVideos()
+          {
+              return Ok(kidsVideosList);
+          }*/
         [HttpGet]
-        public IActionResult GetVideos()
+        public async Task<IActionResult> GetVideos()
         {
-            return Ok(kidsVideosList);
+            try
+            {
+                var videos = await _DbContext.KidsVideos.ToListAsync();
+
+                if (videos != null)
+                {
+                    return Ok(videos);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, "An error occurred while processing the request.");
+            }
         }
 
 
+        [HttpPost]
+        public async Task<IActionResult> AddVid([FromForm] KidsVideosVM videosVM)
+        {
+            try
+            {
+                /*
+                            if (videosVM.ThumbnailUrl == null || videosVM.ThumbnailUrl.Length == 0)
+                            {
+                                return BadRequest("No file uploaded");
+                            }
+
+                            string uploadsDirectory1 = Path.Combine(Directory.GetCurrentDirectory(), "UploadsImage");
+                          *//*  if (!Directory.Exists(uploadsDirectory1))
+                            {
+                                Directory.CreateDirectory(uploadsDirectory1);
+                            }*/
+
+               /* string uniqueFileName1 = Guid.NewGuid().ToString() + "_" + videosVM.ThumbnailUrl.FileName;
+                string filePath1 = Path.Combine(uploadsDirectory1, uniqueFileName1);
+
+                using (var stream1 = new FileStream(filePath1, FileMode.Create))
+                {
+                    await videosVM.ThumbnailUrl.CopyToAsync(stream1);
+                }*/
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+
+                if (videosVM.VideoUrl == null || videosVM.VideoUrl.Length == 0)
+                {
+                    return BadRequest("No file uploaded");
+                }
+
+                string uploadsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+                if (!Directory.Exists(uploadsDirectory))
+                {
+                    Directory.CreateDirectory(uploadsDirectory);
+                }
+
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + videosVM.VideoUrl.FileName;
+                string filePath = Path.Combine(uploadsDirectory, uniqueFileName);
+
+                using (var stream2 = new FileStream(filePath, FileMode.Create))
+                {
+                    await videosVM.VideoUrl.CopyToAsync(stream2);
+                }
+
+                using var stream = new MemoryStream();
+            await videosVM.ThumbnailUrl.CopyToAsync(stream);
+
+         
+
+            var item = new KidsVideos
+            {
+                Title = videosVM.Title,
+                Description = videosVM.Description,
+                ThumbnailUrl = stream.ToArray(),
+                VideoUrl = uniqueFileName
+                /*  ThumbnailUrl= uniqueFileName1,
+                  VideoUrl = uniqueFileName */
+            };
+
+            await _DbContext.KidsVideos.AddAsync(item);
+            await _DbContext.SaveChangesAsync();
+
+            return Ok(item);
+        }
+        catch (TaskCanceledException ex)
+{
+    // Handle the TaskCanceledException
+    // Log the exception or perform other error handling
+    return StatusCode(500, "A task was canceled: " + ex.Message);
+    }
+}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var vidoe = await _DbContext.KidsVideos.FindAsync(id);
+
+                if (vidoe == null)
+                {
+                    return NotFound(); 
+                }
+
+                _DbContext.KidsVideos.Remove(vidoe);
+                await _DbContext.SaveChangesAsync();
+
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+
+
+                return StatusCode(500, "An error occurred while deleting the video."); 
+            }
+        }
     }
 }
 

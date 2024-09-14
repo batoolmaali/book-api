@@ -92,8 +92,8 @@ namespace BookAPI.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("ThumbnailUrl")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("ThumbnailUrl")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -107,6 +107,43 @@ namespace BookAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("KidsVideos");
+                });
+
+            modelBuilder.Entity("BookAPI.Data.Models.RecommendedBook", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssociatedMood")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssociatedSeason")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<byte[]>("ImagePath")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RecommendedBooks");
                 });
 
             modelBuilder.Entity("BookAPI.Data.Models.BookKid", b =>

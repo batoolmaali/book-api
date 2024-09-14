@@ -15,6 +15,7 @@ namespace BookAPI.Data
 
         public DbSet<BookKid> BookKids { get; set; }
 
+        public DbSet<RecommendedBook> RecommendedBooks { get; set; }
       
     }
 }

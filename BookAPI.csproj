@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <Folder Include="Images\VideoImages\" />
+    <Folder Include="UploadsImage\" />
+    <Folder Include="Uploads\" />
     <Folder Include="Videos\KidsVideos\" />
   </ItemGroup>
 
